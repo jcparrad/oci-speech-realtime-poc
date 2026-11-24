@@ -56,5 +56,9 @@
   "LICENSE",
   "docs/07_publicar_en_github.md",
   ".gitattributes",
-  "docs/08_endpoint_sesiones_y_token.md"
+  "docs/08_endpoint_sesiones_y_token.md",
+  "docs/imagenes/speech/01_endpoint_compartido.png",
+  "docs/imagenes/speech/02_autorizacion_y_token.png",
+  "docs/imagenes/speech/03_audio_y_texto.png",
+  "docs/imagenes/speech/04_sesiones_simultaneas.png"
 ]

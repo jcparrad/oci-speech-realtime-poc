@@ -18,6 +18,10 @@ Un **endpoint** es la dirección a la que una aplicación se conecta para consum
 
 La dirección resulta del patrón regional publicado por Oracle y la ruta de su ejemplo oficial. También es la dirección configurada en nuestra prueba. Es un endpoint regional compartido: otros tenants pueden usar la misma dirección con sus propias autorizaciones. Conocerla no concede acceso a nuestro tenant. Bogotá indica la región de Oracle, no la ubicación física que debe tener quien se conecta.
 
+![Tres organizaciones se conectan al mismo endpoint regional de OCI Speech, cada una con su propia autorización.](imagenes/speech/01_endpoint_compartido.png)
+
+**Una dirección compartida no significa una cuenta compartida:** cada conexión debe autenticarse con una identidad autorizada.
+
 ## El endpoint permanece; cada sesión empieza y termina
 
 Oracle mantiene el servicio y publica su dirección. No creamos un endpoint nuevo cada vez que alguien quiere dictar ni tenemos que encender una máquina nuestra para alojar el motor.
@@ -37,6 +41,10 @@ La app **no inventa ni firma por su cuenta el token de Speech**: usa las credenc
 
 Piensa en la API key como la identificación para pedir un pase, y en el token como ese pase temporal. **Configurar la API key no significa que el token ya esté creado.**
 
+![El navegador pide iniciar el dictado; el backend usa API key y config para solicitar un token a OCI, lo devuelve al navegador y este autentica el WebSocket. La privada permanece en el backend.](imagenes/speech/02_autorizacion_y_token.png)
+
+El diagrama separa el equipo local de Oracle Cloud. El recorrido completo es el siguiente.
+
 En modo OCI, al pulsar **Iniciar dictado**:
 
 1. El navegador pide autorización al backend local mediante `POST /api/speech/session`.
@@ -51,13 +59,9 @@ El token también es sensible mientras sea válido: no se comparte ni se publica
 
 ## Qué ocurre cuando alguien habla
 
-```text
-1. La aplicación obtiene autorización temporal para utilizar OCI Speech.
-2. Abre una conexión WebSocket con el endpoint regional de Oracle.
-3. Envía fragmentos de audio mientras la persona habla.
-4. OCI devuelve texto provisional y después segmentos finales.
-5. Al terminar, la aplicación cierra su conexión.
-```
+![Durante el dictado, el navegador envía audio directamente a OCI Speech y recibe texto parcial y final por el mismo WebSocket. El backend local solo interviene en la autorización inicial.](imagenes/speech/03_audio_y_texto.png)
+
+Después de obtener el token y autenticar el WebSocket, el navegador envía fragmentos de audio mientras la persona habla. OCI devuelve texto provisional y segmentos finales por esa misma conexión. Al terminar, la aplicación cierra su conexión. Las dos flechas representan direcciones distintas del mismo WebSocket, no dos endpoints.
 
 La aplicación captura y presenta; OCI realiza el reconocimiento. La puntuación automática es una opción de la sesión: no requiere crear otro endpoint.
 
@@ -65,12 +69,9 @@ La aplicación captura y presenta; OCI realiza el reconocimiento. La puntuación
 
 Se utiliza el mismo endpoint y se abre una conexión independiente para cada flujo de audio. Cada sesión tiene su autorización y la aplicación debe mantener separados el audio y los resultados:
 
-```text
-Persona A → conexión A → OCI Speech → texto A
-Persona B → conexión B → OCI Speech → texto B
-Persona C → conexión C → OCI Speech → texto C
-             misma dirección regional
-```
+![Tres personas utilizan conexiones independientes A, B y C al mismo endpoint de OCI Speech; cada conexión recibe únicamente los resultados de su flujo.](imagenes/speech/04_sesiones_simultaneas.png)
+
+La persona A envía audio por la conexión A y recibe texto A; lo mismo ocurre de forma independiente con B y C. Los rótulos y las flechas permiten distinguir cada flujo sin depender únicamente del color.
 
 No se crean tres endpoints ni se mezclan los audios en una sola conexión. Para una aplicación con varios usuarios se debe gestionar capacidad, errores y asociación de resultados por sesión.
 
