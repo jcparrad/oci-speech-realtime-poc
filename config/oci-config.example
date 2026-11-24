@@ -1,0 +1,8 @@
+# Copy manually to .secrets/oci/config within this app root.
+# One complete profile only. Do not add DEFAULT or persist a passphrase.
+[SPEECH_POC]
+user=REEMPLAZAR_CON_OCID_DEL_USUARIO
+fingerprint=REEMPLAZAR_CON_FINGERPRINT_DE_LA_API_KEY
+tenancy=REEMPLAZAR_CON_OCID_DEL_TENANT
+region=sa-bogota-1
+key_file=REEMPLAZAR_CON_RUTA_ABSOLUTA_A_API_KEY_PEM

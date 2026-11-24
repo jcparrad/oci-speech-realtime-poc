@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Prueba de dictado · OCI Speech</title>
+  <link rel="stylesheet" href="/style.css"><script type="module" src="/app.js"></script>
+</head>
+<body>
+  <div class="shell">
+    <header><a class="brand" href="/" aria-label="Inicio de la prueba"><span class="brand-mark">S</span><span>Speech PoC <small>Transcripción en tiempo real</small></span></a><span class="poc">PRUEBA DE CONCEPTO</span></header>
+    <main>
+      <div class="heading"><div><p class="eyebrow">VOZ A TEXTO / PRUEBA LOCAL</p><h1>Tu voz, convertida en texto.</h1><p class="intro">Prueba la transcripción en tiempo real con OCI Speech.</p></div><span class="mode" id="mode">Cargando…</span></div>
+      <div class="workspace">
+        <section class="dictation" aria-label="Dictado">
+          <div class="panel-top"><span class="state"><span id="live-dot" class="dot"></span><span id="session-state">En espera</span></span><span id="elapsed" class="timer">00:00</span></div>
+          <div class="text-area" aria-live="polite" aria-atomic="true">
+            <div id="empty" class="empty"><div class="sound">▂ ▅ ▃ ▇ ▃ ▅ ▂</div><h2>Cuando quieras, empieza.</h2><p>Tu texto aparecerá aquí mientras hablas.<br>Las palabras provisionales se muestran en otro color.</p></div>
+            <span id="final"></span><span id="partial" class="partial"></span>
+          </div>
+          <div class="text-meta"><span><b id="characters">0</b> caracteres consolidados</span><span><b id="segments">0</b> segmentos en esta sesión</span></div>
+          <div class="actions"><button id="start" class="primary" disabled>Iniciar dictado</button><button id="stop" disabled>Detener</button><button id="clear" class="quiet">Limpiar</button></div>
+          <p id="status" class="status" role="status">Consultando el servidor local…</p>
+        </section>
+        <aside>
+          <section class="settings"><p class="eyebrow">CONFIGURACIÓN DE LA PRUEBA</p><h2>Lista para escuchar.</h2><dl><div><dt>Región</dt><dd>Bogotá <span>sa-bogota-1</span></dd></div><div><dt>Modelo</dt><dd>Oracle ASR <span>Dominio general</span></dd></div><div><dt>Idioma</dt><dd>Español <span>España · es-ES</span></dd></div><div><dt>Puntuación</dt><dd class="enabled">Automática <span>Activada</span></dd></div></dl><div class="fine-settings"><span>Cierre por silencio <b>1.000 ms</b></span><span>Estabilidad parcial <b>Media</b></span><span>Duración máxima <b>5 minutos</b></span></div></section>
+          <section class="note"><span class="note-icon">i</span><div><h3>Una prueba, con tus datos de acceso.</h3><p id="mode-note">Cada participante configura su propia identidad OCI en su equipo.</p><p>El texto permanece en esta vista. No se guarda automáticamente.</p></div></section>
+        </aside>
+      </div>
+      <details class="event-panel"><summary>Eventos de transcripción <span id="event-count">0</span><small>Solo resultados · últimos 60</small></summary><p>El visor omite mensajes de autenticación. Los resultados contienen el texto dictado.</p><pre id="events">[]</pre></details>
+    </main>
+    <footer><span>Ejemplo de transcripción · PoC local</span><span>Revisa el texto antes de utilizarlo.</span></footer>
+  </div>
+</body>
+</html>

@@ -1,0 +1,25 @@
+{
+  "name": "oci-speech-realtime-poc",
+  "version": "0.1.0",
+  "license": "MIT",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=24 <25" },
+  "scripts": {
+    "check": "tsc --noEmit",
+    "build": "node scripts/build.mjs",
+    "test": "node --test --experimental-strip-types tests/*.test.ts",
+    "start": "node dist/server/main.js",
+    "demo": "node dist/server/main.js --demo"
+  },
+  "dependencies": {
+    "@oracle/oci-ai-speech-realtime-web": "2.2.0",
+    "oci-aispeech": "2.147.0",
+    "oci-common": "2.147.0"
+  },
+  "devDependencies": {
+    "@types/node": "24.0.0",
+    "esbuild": "0.28.2",
+    "typescript": "5.9.3"
+  }
+}

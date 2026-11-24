@@ -1,0 +1,27 @@
+# Personal configuration and credentials
+.env*
+!.env.example
+.secrets/
+api_keys/
+*.pem
+*.key
+*.p12
+*.pfx
+*.p8
+*.jks
+
+# Dependencies, builds and local outputs
+node_modules/
+dist/
+salidas_locales/
+distribucion_local/
+_plans/
+*.log
+*.wav
+*.mp3
+*.m4a
+*.ogg
+*.webm
+*.pcm
+*.zip
+.DS_Store
