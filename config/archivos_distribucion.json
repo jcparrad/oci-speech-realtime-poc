@@ -55,5 +55,6 @@
   "third_party/typescript/ThirdPartyNoticeText.txt",
   "LICENSE",
   "docs/07_publicar_en_github.md",
-  ".gitattributes"
+  ".gitattributes",
+  "docs/08_endpoint_sesiones_y_token.md"
 ]

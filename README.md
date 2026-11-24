@@ -59,6 +59,7 @@ Las pruebas usan datos sintéticos y servidores efímeros en loopback. Cubren fo
 - [Fuentes y validaciones locales](docs/04_fuentes_y_validacion.md).
 - [Colaboración y CI](docs/06_colaboracion_y_ci.md).
 - [Publicación en GitHub y entrega](docs/07_publicar_en_github.md).
+- [Endpoint, sesiones simultáneas y token temporal](docs/08_endpoint_sesiones_y_token.md).
 - [Seguridad y reporte privado](SECURITY.md), [contribuciones](CONTRIBUTING.md) y [avisos de terceros](THIRD_PARTY_NOTICES.md).
 - [Ejemplo de configuración de la app](.env.example) y [ejemplo de config OCI](config/oci-config.example).
 
