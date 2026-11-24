@@ -53,7 +53,7 @@ En modo OCI, al pulsar **Iniciar dictado**:
 4. El backend entrega esos datos al navegador. Este abre el WebSocket y envía el token en el mensaje de autenticación, no dentro de la URL.
 5. Una vez autenticado, el navegador transmite audio directamente a OCI y recibe texto. El backend local no transporta ese audio.
 
-Nuestra app solicita un token nuevo para cada inicio de dictado que llega a la autorización. Mantiene el token en memoria de ejecución y no lo guarda automáticamente en archivos ni lo imprime. El modo demo no solicita tokens. La duración y validez del token las determina OCI; los cinco minutos de duración máxima de la PoC son una decisión local y no equivalen al tiempo de validez del token. Cerrar el WebSocket no debe interpretarse como una revocación instantánea del token.
+Nuestra app solicita un token nuevo para cada inicio de dictado que llega a la autorización. Mantiene el token en memoria de ejecución y no lo guarda automáticamente en archivos ni lo imprime. La duración y validez del token las determina OCI; los cinco minutos de duración máxima de la PoC son una decisión local y no equivalen al tiempo de validez del token. Cerrar el WebSocket no debe interpretarse como una revocación instantánea del token.
 
 El token también es sensible mientras sea válido: no se comparte ni se publica. El compartimento se especifica en la solicitud y en la autenticación de la sesión; no se añade su nombre a la dirección del WebSocket. Los permisos IAM determinan el acceso efectivo.
 

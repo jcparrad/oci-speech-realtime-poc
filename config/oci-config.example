@@ -1,5 +1,6 @@
 # Copy manually to .secrets/oci/config within this app root.
-# One complete profile only. Do not add DEFAULT or persist a passphrase.
+# One complete profile only; match its name with OCI_CONFIG_PROFILE in your local .env.
+# Do not add DEFAULT or persist a passphrase.
 [SPEECH_POC]
 user=REEMPLAZAR_CON_OCID_DEL_USUARIO
 fingerprint=REEMPLAZAR_CON_FINGERPRINT_DE_LA_API_KEY

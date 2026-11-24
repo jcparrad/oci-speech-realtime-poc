@@ -4,8 +4,8 @@ import { request } from 'node:http';
 import { once } from 'node:events';
 import { makeServer } from '../src/server/http.ts';
 
-async function fixture(demo: boolean, issue: () => Promise<{ token: string; sessionId: string; compartmentId: string }>) {
-  const options = { port: 0, demo, publicDir: '/synthetic/no-static-files', issue };
+async function fixture(issue: () => Promise<{ token: string; sessionId: string; compartmentId: string }>) {
+  const options = { port: 0, publicDir: '/synthetic/no-static-files', issue };
   const server = makeServer(options);
   server.listen(0, '127.0.0.1'); await once(server, 'listening');
   options.port = (server.address() as { port: number }).port;
@@ -25,7 +25,7 @@ const token = { token: 'synthetic-not-a-jwt', sessionId: 'synthetic', compartmen
 
 test('local origin, host, method and body checks prevent issuing tokens', async () => {
   let calls = 0;
-  const f = await fixture(false, async () => { calls++; return token; });
+  const f = await fixture(async () => { calls++; return token; });
   try {
     const rejectedHeaders: Record<string, string>[] = [{ origin: 'https://external.invalid' }, { host: 'external.invalid' }, { 'x-speech-poc': '' }];
     for (const headers of rejectedHeaders) {
@@ -40,21 +40,22 @@ test('local origin, host, method and body checks prevent issuing tokens', async 
     assert.equal((await f.call('/api/speech/session')).status, 429);
   } finally { await f.close(); }
 });
-test('demo never invokes an issuer and arbitrary private paths are not served', async () => {
-  const f = await fixture(true, async () => { throw new Error('MUST NOT EXECUTE'); });
+test('configuration does not issue tokens and arbitrary private paths are not served', async () => {
+  let calls = 0;
+  const f = await fixture(async () => { calls++; return token; });
   try {
-    assert.equal((await f.call('/api/speech/session')).status, 409);
     for (const path of ['/.env', '/.secrets/oci/config', '/package.json']) {
       assert.equal((await f.call(path, {}, '', 'GET')).status, 404);
     }
     const config = await f.call('/api/config', {}, '', 'GET');
-    assert.equal(JSON.parse(config.text).mode, 'demo');
+    assert.equal(JSON.parse(config.text).mode, 'live');
     assert.equal(JSON.parse(config.text).settings.punctuation, 'AUTO');
     assert.equal(config.text.includes('synthetic-not-a-jwt'), false);
+    assert.equal(calls, 0);
   } finally { await f.close(); }
 });
 test('SDK errors are replaced with safe messages instead of serialized credentials', async () => {
-  const f = await fixture(false, async () => { throw { statusCode: 403, token: 'synthetic-secret', headers: { authorization: 'synthetic-secret' } }; });
+  const f = await fixture(async () => { throw { statusCode: 403, token: 'synthetic-secret', headers: { authorization: 'synthetic-secret' } }; });
   try {
     const response = await f.call('/api/speech/session');
     assert.equal(response.status, 502);

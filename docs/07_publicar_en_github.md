@@ -58,7 +58,7 @@ Configura reportes privados de vulnerabilidades y revisa sus destinatarios, prot
 
 ## 6. Entregar al compañero
 
-Comparte la URL pública y el commit o versión revisada. El compañero clona, entra a la raíz y sigue el [README](../README.md) y la [guía de instalación](03_entrega_companero.md). Puede usar la demo sin credenciales o preparar su identidad siguiendo [credenciales](01_credenciales.md). Nunca necesita recibir las claves o `.env` del autor.
+Comparte la URL pública y el commit o versión revisada. El compañero clona, entra a la raíz y sigue el [README](../README.md) y la [guía de instalación](03_entrega_companero.md). Prepara su propia identidad siguiendo [credenciales](01_credenciales.md) y prueba con su micrófono. Nunca necesita recibir las claves o `.env` del autor.
 
 ## Fuentes
 

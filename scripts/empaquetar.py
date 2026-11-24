@@ -52,7 +52,7 @@ def build_package():
         "# PoC local de OCI Speech realtime\n\n"
         "Empieza por la [guía de instalación para el compañero](docs/03_entrega_companero.md).\n\n"
         "Requiere Node.js 24.x e Internet para instalar dependencias. "
-        "Incluye demostración sin credenciales; cada participante configura su propia API key para probar OCI.\n\n"
+        "El dictado requiere micrófono y acceso OCI; cada participante configura su propia API key.\n\n"
         "Crea `.secrets/oci/` dentro de la raíz de esta app únicamente cuando sigas la guía. "
         "No se incluyen claves, config real ni tokens. Las comprobaciones realizadas son locales con datos sintéticos; "
         "micrófono, apariencia en navegador y acceso OCI reales no están verificados.\n\n"

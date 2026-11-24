@@ -32,7 +32,7 @@
   "tests/audio.test.ts",
   "tests/config.test.ts",
   "tests/connection.test.ts",
-  "tests/demo.test.ts",
+  "tests/live-ui.test.ts",
   "tests/http.test.ts",
   "tests/transcript.test.ts",
   "SECURITY.md",

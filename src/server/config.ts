@@ -10,7 +10,10 @@ export interface Credentials {
 const invalid = (text: string): never => { throw new ConfigError(text); };
 const ocid = (kind: string, value: string) => new RegExp(`^ocid1\\.${kind}\\.oc[0-9]+\\.[a-z0-9.-]+$`, 'i').test(value);
 
-export function parseCredentials(text: string, compartmentId: string, region: string): Credentials {
+export function parseCredentials(text: string, compartmentId: string, region: string, profileName: string): Credentials {
+  if (!/^[A-Za-z0-9][A-Za-z0-9_-]{0,63}$/.test(profileName) || profileName.toUpperCase() === 'DEFAULT') {
+    invalid('OCI_CONFIG_PROFILE debe indicar un perfil explícito de 1–64 letras, números, guiones o guiones bajos; no DEFAULT.');
+  }
   const allowed = new Set(['user', 'tenancy', 'fingerprint', 'region', 'key_file']);
   const values = new Map<string, string>();
   let profile = false;
@@ -18,7 +21,7 @@ export function parseCredentials(text: string, compartmentId: string, region: st
     const line = raw.trim();
     if (!line || line.startsWith('#')) continue;
     if (line.startsWith('[')) {
-      if (profile || line !== '[SPEECH_POC]') invalid('El config debe contener solo el perfil SPEECH_POC.');
+      if (profile || line !== `[${profileName}]`) invalid('El config debe contener un único perfil, coincidente con OCI_CONFIG_PROFILE.');
       profile = true; continue;
     }
     const index = line.indexOf('=');
@@ -28,7 +31,7 @@ export function parseCredentials(text: string, compartmentId: string, region: st
     if (!value || value.includes('REEMPLAZAR') || /[<>\r\n]/.test(value)) invalid('Completa los placeholders del config.');
     values.set(key, value);
   }
-  if (values.size !== allowed.size) invalid('Faltan campos obligatorios en SPEECH_POC.');
+  if (values.size !== allowed.size) invalid('Faltan campos obligatorios en el perfil seleccionado.');
   const get = (key: string) => values.get(key)!;
   if (region !== 'sa-bogota-1' || get('region') !== region) invalid('Config y .env deben usar sa-bogota-1.');
   if (!ocid('user', get('user')) || !ocid('tenancy', get('tenancy')) || !ocid('compartment', compartmentId)) {
@@ -54,7 +57,6 @@ export async function loadCredentials(appRoot: string): Promise<Credentials> {
   if (Object.keys(env).some(k => !expected.includes(k)) || expected.some(k => !env[k])) {
     invalid('.env debe contener únicamente los cuatro campos de .env.example, completos.');
   }
-  if (env.OCI_CONFIG_PROFILE !== 'SPEECH_POC') invalid('El perfil requerido es SPEECH_POC.');
   const file = resolve(appRoot, env.OCI_CONFIG_FILE!);
-  return parseCredentials(await readPrivateFile(file), env.OCI_COMPARTMENT_ID!, env.OCI_REGION!);
+  return parseCredentials(await readPrivateFile(file), env.OCI_COMPARTMENT_ID!, env.OCI_REGION!, env.OCI_CONFIG_PROFILE!);
 }

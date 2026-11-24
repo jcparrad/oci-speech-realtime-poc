@@ -23,7 +23,7 @@ Estos valores son decisiones del ejemplo, no garantías de latencia, disponibili
 
 ## Configuración personal
 
-Desde la raíz de la app, `.env` selecciona explícitamente `.secrets/oci/config` y el perfil completo `[SPEECH_POC]`. La privada personal se guarda en `.secrets/oci/`; `key_file` contiene su ruta absoluta sin comillas. La app rechaza herencia de DEFAULT, campos desconocidos y passphrases guardadas. Cada participante prepara estos archivos siguiendo la [guía](docs/01_credenciales.md).
+Desde la raíz de la app, `.env` selecciona explícitamente `.secrets/oci/config` y un perfil completo cuyo nombre debe coincidir con `OCI_CONFIG_PROFILE`; `[SPEECH_POC]` es el ejemplo genérico. La privada personal se guarda en `.secrets/oci/`; `key_file` contiene su ruta absoluta sin comillas. La app rechaza herencia de DEFAULT, campos desconocidos y passphrases guardadas. Cada participante prepara estos archivos siguiendo la [guía](docs/01_credenciales.md).
 
 ## Comportamiento y límites
 

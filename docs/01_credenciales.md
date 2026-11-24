@@ -1,6 +1,6 @@
 # Credenciales personales para la PoC
 
-Cada participante usa su propia identidad OCI. No recibirá claves del autor ni debe enviar su config al compañero. La demostración funciona sin credenciales. La preparación de material real y las operaciones OCI las realiza el participante.
+Cada participante usa su propia identidad OCI. No recibirá claves del autor ni debe enviar su config al compañero. El dictado requiere micrófono y autorización OCI. La preparación de material real y las operaciones OCI las realiza el participante.
 
 ## 1. Preparar la carpeta local
 
@@ -28,11 +28,13 @@ En una descarga sin `.git`, no inicialices Git desde otra carpeta ni subas todo 
 
 ## 2. Registrar la clave pública
 
+Si ya tienes config y clave preparados para esta PoC, no los vuelvas a crear ni los copies: revisa personalmente que el config tenga un único perfil completo y pasa al paso 4 para indicar su ruta y perfil locales. La clave debe seguir donde indica su `key_file` absoluto. No se buscan credenciales automáticamente.
+
 Necesitas acceso OCI y autorización para registrar una API signing key. Sigue las [instrucciones oficiales de Oracle](https://docs.oracle.com/en-us/iaas/Content/API/Concepts/apisigningkey.htm) para registrar la pública y obtener el snippet de configuración. Conserva la privada en tu equipo como `.secrets/oci/api_key.pem`; revisa personalmente las copias de descargas. No uses un Auth Token ni una clave SSH como sustituto.
 
 ## 3. Completar el config
 
-Copia [oci-config.example](../config/oci-config.example) a `.secrets/oci/config`, sin sobrescribir otro archivo. Conserva un único perfil `[SPEECH_POC]` y completa tus valores:
+Copia [oci-config.example](../config/oci-config.example) a `.secrets/oci/config`, sin sobrescribir otro archivo. La plantilla propone un único perfil `[SPEECH_POC]`; completa tus valores:
 
 | Campo | Valor personal |
 | --- | --- |
@@ -57,14 +59,20 @@ OCI_REGION=sa-bogota-1
 OCI_COMPARTMENT_ID=REEMPLAZAR_CON_OCID_DEL_COMPARTIMENTO
 ```
 
+`SPEECH_POC` es un ejemplo. Si tu config dedicado usa otro nombre, coloca exactamente ese nombre en `OCI_CONFIG_PROFILE`, sin corchetes. Se admiten de 1 a 64 letras o números, con guiones o guiones bajos; el primer carácter debe ser letra o número y no se admite `DEFAULT`. El archivo debe contener únicamente ese perfil completo: no se heredan valores ni se selecciona otra identidad.
+
+`OCI_CONFIG_FILE` puede ser una ruta absoluta o una ruta relativa al config ya existente, incluso fuera de la carpeta de la app. No muevas ni dupliques claves para cambiar esta ruta. El config y la clave externos deben permanecer fuera de cualquier repositorio o paquete público; el `.gitignore` de esta app no protege otras carpetas.
+
 El compartimento se identifica por OCID, no por nombre. Elige uno autorizado para tu identidad. Las rutas relativas se resuelven desde la raíz de la app, no desde la terminal. Config y `.env` deben coincidir en región.
 
-En macOS/Linux, una vez creados los archivos, aplica personalmente:
+En macOS/Linux, para la estructura del paso 1, aplica personalmente:
 
 ```sh
 chmod 700 .secrets .secrets/oci
 chmod 600 .secrets/oci/config .secrets/oci/api_key.pem .env
 ```
+
+Si utilizas archivos en otra ubicación, aplica los mismos permisos sobre sus rutas reales y sus carpetas privadas. No compartas esas rutas personales en issues.
 
 En Windows revisa las ACL en Propiedades → Seguridad según tu organización. No sustituyas sus controles con `chmod`.
 

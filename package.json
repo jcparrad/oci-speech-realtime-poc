@@ -9,8 +9,7 @@
     "check": "tsc --noEmit",
     "build": "node scripts/build.mjs",
     "test": "node --test --experimental-strip-types tests/*.test.ts",
-    "start": "node dist/server/main.js",
-    "demo": "node dist/server/main.js --demo"
+    "start": "node dist/server/main.js"
   },
   "dependencies": {
     "@oracle/oci-ai-speech-realtime-web": "2.2.0",

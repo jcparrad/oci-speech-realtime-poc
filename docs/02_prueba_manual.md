@@ -4,16 +4,16 @@ Esta prueba la ejecuta el participante en su equipo y tenant. El agente no usa c
 
 ## Preparación
 
-1. Sigue el [README](../README.md) para instalar y compilar. Prueba primero `npm run demo` y **Iniciar demostración**: debe mostrar texto ficticio y declarar el modo demostración, sin permiso de micrófono.
-2. Detén ese servidor con `Ctrl+C`. Completa tu [configuración personal](01_credenciales.md), incluido el OCID del compartimento y los permisos de archivos.
-3. Abre una terminal en `oci-speech-realtime-poc/` y ejecuta `npm start`. Si la privada está cifrada, escribe su passphrase cuando la terminal la pida; no aparecerá en pantalla.
-4. Abre `http://127.0.0.1:8000`. Comprueba que indica modo OCI y que la configuración muestra Bogotá, Oracle ASR, español y puntuación automática. Si indica demostración, revisa qué servidor sigue ejecutándose.
+1. Sigue el [README](../README.md) para instalar y completa tu [configuración personal](01_credenciales.md), incluido el OCID del compartimento y los permisos de archivos.
+2. Detén cualquier instancia anterior de esta app con `Ctrl+C` en su terminal. Desde la raíz del proyecto ejecuta `npm run build` y después `npm start`. Si la privada está cifrada, escribe su passphrase cuando la terminal la pida; no aparecerá en pantalla.
+3. Abre o recarga `http://127.0.0.1:8000`. Comprueba que muestra **Dictado con OCI**, Bogotá, Oracle ASR, español y puntuación automática. La vista debe permanecer vacía hasta recibir resultados de lo que dictes. La configuración visible todavía no confirma una sesión conectada.
+4. Si ves una interfaz antigua o texto prefabricado sin hablar, revisa la terminal, la carpeta y el puerto: no estás usando la instancia actualizada. No continúes esa prueba.
 
 La app usa el compartimento de `.env`; no lo cambia desde la interfaz. El token se solicita al pulsar **Iniciar dictado**, no al abrir la página. Esta prueba consume servicios OCI; no se presupone gratuidad.
 
-## Dictado de referencia ficticio
+## Hablar por el micrófono
 
-Pulsa **Iniciar dictado**, permite el micrófono y espera **Escuchando**. Lee a ritmo natural, con pausas, este texto ficticio:
+Pulsa **Iniciar dictado**, permite el micrófono y espera **Escuchando**. Di una frase nueva elegida por ti para comprobar que aparece lo que acabas de pronunciar. Después puedes leer a ritmo natural, con pausas, este texto de referencia ficticio:
 
 > Buenos días. Vamos a organizar una reunión de trabajo. Será el martes, a las diez de la mañana, en la sala Central. Revisaremos tres propuestas y elegiremos la fecha de la próxima sesión. Deseo revisar el texto antes de terminar.
 

@@ -1,6 +1,6 @@
 import { Microphone } from './audio.ts';
 import { SpeechConnection } from './connection.ts';
-import { Transcript, safeResult, type Segment } from '../shared/transcript.ts';
+import { Transcript, safeResult } from '../shared/transcript.ts';
 import { finalizationConfirmed } from '../shared/drain.ts';
 import type { SessionToken } from '../shared/settings.ts';
 
@@ -10,11 +10,10 @@ const clear = el<HTMLButtonElement>('clear');
 let transcript = new Transcript();
 let connection: SpeechConnection | undefined, microphone: Microphone | undefined;
 let controller: AbortController | undefined;
-let mode: 'demo' | 'live' = 'demo';
+let configured = false;
 let phase: 'idle' | 'starting' | 'recording' | 'stopping' = 'idle';
 let run = 0, startedAt = 0, finalTextBeforeRun = '';
 let events: unknown[] = [];
-let demoTimers: ReturnType<typeof setTimeout>[] = [];
 
 function status(text: string, error = false) {
   el('status').textContent = text;
@@ -26,7 +25,7 @@ function controls(next: typeof phase) {
   stop.disabled = phase !== 'recording' && phase !== 'starting';
   clear.disabled = phase !== 'idle';
   el('live-dot').classList.toggle('active', phase === 'recording');
-  el('session-state').textContent = { idle: 'En espera', starting: 'Conectando', recording: mode === 'demo' ? 'Simulando' : 'Escuchando', stopping: 'Finalizando' }[phase];
+  el('session-state').textContent = { idle: 'En espera', starting: 'Conectando', recording: 'Escuchando', stopping: 'Finalizando' }[phase];
 }
 function render() {
   const combined = [finalTextBeforeRun, transcript.finalText].filter(Boolean).join(' ');
@@ -48,35 +47,15 @@ function receive(value: unknown) {
 function fail(text: string) {
   ++run; controller?.abort();
   microphone?.dispose(); connection?.close();
-  for (const timer of demoTimers) clearTimeout(timer);
-  demoTimers = [];
   status(text, true); controls('idle');
 }
-function fixture(text: string, final: boolean, offset: number): void {
-  const segment: Segment = { transcription: text, isFinal: final, startTimeInMs: offset, endTimeInMs: offset + 1600 };
-  receive({ event: 'RESULT', transcriptions: [segment] });
-}
-function beginDemo() {
-  controls('recording'); status('Demostración con un texto ficticio. No se utiliza el micrófono.');
-  const samples: [string, boolean, number][] = [
-    ['Buenos días', false, 0], ['Buenos días. Vamos a organizar una reunión.', true, 0],
-    ['La reunión', false, 2200], ['La reunión será el martes a las diez de la mañana.', false, 2200],
-    ['La reunión será el martes a las diez de la mañana.', true, 2200],
-  ];
-  samples.forEach(([text, final, offset], i) => demoTimers.push(setTimeout(() => {
-    fixture(text, final, offset);
-    if (i === samples.length - 1) { status('Demostración completada. Texto ficticio, sin conexión a OCI.'); controls('idle'); }
-  }, (i + 1) * 800)));
-}
-
 start.addEventListener('click', async () => {
-  if (phase !== 'idle') return;
+  if (!configured || phase !== 'idle') return;
   if (transcript.hasPending) { status('Hay texto provisional sin confirmar. Revísalo y usa Limpiar antes de otra prueba.', true); return; }
   finalTextBeforeRun = [finalTextBeforeRun, transcript.finalText].filter(Boolean).join(' ');
   transcript = new Transcript(); render();
   events = []; el('events').textContent = '[]'; el('event-count').textContent = '0';
   startedAt = Date.now(); const thisRun = ++run;
-  if (mode === 'demo') { beginDemo(); return; }
   controls('starting'); status('Preparando micrófono y autorización…');
   try {
     connection = new SpeechConnection(receive, text => fail(text));
@@ -114,13 +93,6 @@ start.addEventListener('click', async () => {
 stop.addEventListener('click', async () => {
   if (phase === 'starting') { fail('Inicio cancelado. Puedes volver a intentarlo.'); return; }
   if (phase !== 'recording') return;
-  if (mode === 'demo') {
-    for (const timer of demoTimers) clearTimeout(timer);
-    demoTimers = [];
-    if (transcript.hasPending) status('Demostración detenida con texto provisional. Puedes revisarlo y limpiar.');
-    else status('Demostración detenida.');
-    controls('idle'); return;
-  }
   const thisRun = run;
   controls('stopping'); status('Micrófono detenido. Esperando resultados finales…');
   try {
@@ -156,11 +128,13 @@ window.addEventListener('pagehide', () => { ++run; controller?.abort(); micropho
 
 controls('idle'); start.disabled = true;
 fetch('/api/config').then(r => { if (!r.ok) throw new Error(); return r.json(); }).then(config => {
-  mode = config.mode === 'live' ? 'live' : 'demo';
-  el('mode').textContent = mode === 'demo' ? 'Demostración local' : 'Conexión directa · OCI';
-  el('mode-note').textContent = mode === 'demo'
-    ? 'Datos ficticios. Este modo no usa micrófono, credenciales ni OCI.'
-    : 'El audio se envía a OCI Speech al iniciar. Usa un texto ficticio para la prueba.';
-  start.textContent = mode === 'demo' ? 'Iniciar demostración' : 'Iniciar dictado';
-  status('Todo listo para comenzar.'); start.disabled = false;
-}).catch(() => status('No se pudo consultar el servidor local. Revisa la terminal.', true));
+  if (config?.mode !== 'live') throw new Error('Configuración de servidor incompatible.');
+  configured = true;
+  el('mode').textContent = 'Dictado con OCI';
+  el('mode-note').textContent = 'El audio se envía a OCI Speech al iniciar. Usa un texto ficticio para la prueba.';
+  status('Servidor local disponible. Pulsa Iniciar dictado para conectar con OCI.'); start.disabled = false;
+}).catch(() => {
+  configured = false; start.disabled = true;
+  el('mode').textContent = 'Sin conexión preparada';
+  status('No se pudo cargar una configuración compatible. Reinicia el servidor actualizado y recarga la página.', true);
+});

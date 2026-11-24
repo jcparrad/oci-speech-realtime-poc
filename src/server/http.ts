@@ -4,7 +4,7 @@ import { join } from 'node:path';
 import { settings, type SessionToken } from '../shared/settings.ts';
 
 interface Options {
-  port: number; publicDir: string; demo: boolean; issue?: () => Promise<SessionToken>;
+  port: number; publicDir: string; issue: () => Promise<SessionToken>;
   now?: () => number;
 }
 export function makeServer(options: Options) {
@@ -33,7 +33,7 @@ export function makeServer(options: Options) {
       json(res, 403, { error: 'Origen no permitido.' }); return;
     }
     if (req.method === 'GET' && req.url === '/api/config') {
-      json(res, 200, { mode: options.demo ? 'demo' : 'live', settings }); return;
+      json(res, 200, { mode: 'live', settings }); return;
     }
     if (req.url === '/api/speech/session') {
       if (req.method !== 'POST') { json(res, 405, { error: 'Usa POST.' }); return; }
@@ -48,11 +48,9 @@ export function makeServer(options: Options) {
       }
       if (oversized) { json(res, 413, { error: 'Solicitud demasiado grande.' }); return; }
       if (body.trim() !== '{}') { json(res, 400, { error: 'El cuerpo debe ser {}.' }); return; }
-      if (options.demo) { json(res, 409, { error: 'La demostración no emite tokens ni conecta a OCI.' }); return; }
       if (busy || now() - lastIssue < 5000) { json(res, 429, { error: 'Espera cinco segundos antes de otra sesión.' }); return; }
       busy = true; lastIssue = now();
       try {
-        if (!options.issue) throw new Error('No issuer');
         json(res, 200, await options.issue());
       } catch (error) {
         // Never serialize SDK errors, response objects, authorization headers or tokens.
